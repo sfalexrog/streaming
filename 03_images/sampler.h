@@ -5,6 +5,25 @@
 
 const float GAMMA = 2.2f;
 
+// Переводит цвет из гамма-пространства (того, как значение хранится в файле/памяти) в линейное
+vec3 gamma_to_linear(const vec3& gamma_value)
+{
+    return vec3{
+            std::pow(gamma_value.r, GAMMA),
+            std::pow(gamma_value.g, GAMMA),
+            std::pow(gamma_value.b, GAMMA)
+        };
+}
+
+vec3 linear_to_gamma(const vec3& linear_value)
+{
+    return vec3{
+            std::pow(linear_value.r, 1.0f / GAMMA),
+            std::pow(linear_value.g, 1.0f / GAMMA),
+            std::pow(linear_value.b, 1.0f / GAMMA)
+        };
+}
+
 struct Sampler
 {
     unsigned char *image;
@@ -20,25 +39,6 @@ struct Sampler
         result.g = image[(y * width * colors) + (x * colors) + 1];
         result.b = image[(y * width * colors) + (x * colors) + 2];
         return result;
-    }
-
-    // Переводит цвет из гамма-пространства (того, как значение хранится в файле/памяти) в линейное
-    vec3 gamma_to_linear(const vec3& gamma_value)
-    {
-        return vec3{
-            std::pow(gamma_value.r, 1.0f / GAMMA),
-            std::pow(gamma_value.g, 1.0f / GAMMA),
-            std::pow(gamma_value.b, 1.0f / GAMMA)
-        };
-    }
-
-    vec3 linear_to_gamma(const vec3& linear_value)
-    {
-        return vec3{
-            std::pow(linear_value.r, GAMMA),
-            std::pow(linear_value.g, GAMMA),
-            std::pow(linear_value.b, GAMMA)
-        };
     }
 
     /// Линейно интерполирует значения между a и b, параметр интерполяции - t

@@ -46,21 +46,21 @@ int main(int argc, char** argv)
             for(int y = 0; y < sheight; ++y)
             {
                 vec3 color;
-                for(int dx = -1; dx < 2; ++dx)
+                for(int dx = 0; dx < 2; ++dx)
                 {
-                    for(int dy = -1; dy < 2; ++dy)
+                    for(int dy = 0; dy < 2; ++dy)
                     {
                         color = color + img.at(float(x + dx / 2.0f)/float(swidth), float(y + dy / 2.0f)/float(sheight), true);
                     }
                 }
-                color = color * (1.0f / 9.0f);
-                color = img.linear_to_gamma(color);
+                color = color * (1.0f / 4.0f);
+                color = linear_to_gamma(color);
                 scaled[(y * swidth * components) + (x * components)    ] = clamp(color.r, 0, 255);
                 scaled[(y * swidth * components) + (x * components) + 1] = clamp(color.g, 0, 255);
                 scaled[(y * swidth * components) + (x * components) + 2] = clamp(color.b, 0, 255);
             }
         }
-        stbi_write_png("dalai_lama_2.png", swidth, sheight, 3, scaled, 0);
+        stbi_write_png("dalai_lama.png", swidth, sheight, 3, scaled, 0);
         stbi_image_free(image);        
     }
     return 0;

@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 {
     int width, height;
     int components;
-    vec3 *image = (vec3*)stbi_loadf("grace-new.hdr", &width, &height, &components, 3);
+    vec3 *image = (vec3*)stbi_loadf("20060121-06_hd.hdr", &width, &height, &components, 3);
 
     if (image == nullptr)
     {
@@ -27,25 +27,26 @@ int main(int argc, char** argv)
 
     unsigned char *ldr = new unsigned char[width * height * components];
 
-    Sampler s{nullptr, 0, 0, 0};
-    const float EXPOSURE = 128.0f;
+    const float EXPOSURE = 8.0f;
 
     for(int y = 0; y < height; ++y)
     {
         for(int x = 0; x < width; ++x)
         {
             vec3 c = image[y * width + x];
-            c = s.gamma_to_linear(c);
             c = c * EXPOSURE;
-            //vec3 cg = s.linear_to_gamma(c);//c;//s.linear_to_gamma(c);
-            vec3 cg = c;
-            ldr[(y * width * components) + (x * components)] = clamp(cg.r, 0, 255);
-            ldr[(y * width * components) + (x * components) + 1] = clamp(cg.g, 0, 255);
-            ldr[(y * width * components) + (x * components) + 2] = clamp(cg.b, 0, 255);
+            c = vec3{c.r / (1.0f + c.r),
+                     c.g / (1.0f + c.g),
+                     c.b / (1.0f + c.b)
+            };
+            vec3 cg = linear_to_gamma(c);
+            ldr[(y * width * components) + (x * components)    ] = clamp(cg.r * 255.0f, 0, 255);
+            ldr[(y * width * components) + (x * components) + 1] = clamp(cg.g * 255.0f, 0, 255);
+            ldr[(y * width * components) + (x * components) + 2] = clamp(cg.b * 255.0f, 0, 255);
         }
     }
 
-    stbi_write_png("grace-new.png", width, height, components, ldr, 0);
+    stbi_write_png("20060121-06_hd.png", width, height, components, ldr, 0);
     delete ldr;
     stbi_image_free(image);
     return 0;
